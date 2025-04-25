@@ -1,25 +1,23 @@
-This is the [assistant-ui](https://github.com/Yonom/assistant-ui) starter project.
+This open source mortgage rate copilot is a collaboration between [ClosingWTF](https://closingwtf.com) and [assistant-ui](https://github.com/Yonom/assistant-ui). It's an example of using assistantUI powerful chat component and tools to retrieve live realtime mortgage data from ClosingWTF's api.
 
 ## Getting Started
 
-First, add your OpenAI API key to `.env.local` file:
+First, add your Anthropic API key to  `.env.local` file:
+```
+ANTHROPIC_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 
+Then, install dependencies
+
+```bash
+bun install
 ```
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+
 
 Then, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

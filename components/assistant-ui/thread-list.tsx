@@ -1,3 +1,4 @@
+"use client";
 import type { FC } from "react";
 import {
   ThreadListItemPrimitive,
@@ -46,7 +47,7 @@ const ThreadListItem: FC = () => {
 const ThreadListItemTitle: FC = () => {
   return (
     <p className="text-sm">
-      <ThreadListItemPrimitive.Title fallback="New Chat" />
+      <ThreadListItemPrimitive.Title fallback="New Chat123" />
     </p>
   );
 };

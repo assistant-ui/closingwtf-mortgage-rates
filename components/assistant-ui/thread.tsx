@@ -12,15 +12,19 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CopyIcon,
+  PaperclipIcon,
   PencilIcon,
   RefreshCwIcon,
   SendHorizontalIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { Button } from "@/components/ui/button";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { UserMessageAttachments } from "./attachment";
+import { ComposerAttachments } from "./attachment";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { AttachmentInputPrimitive } from "./attatchment-dnd";
 
 export const Thread: FC = () => {
   return (
@@ -73,7 +77,20 @@ const ThreadWelcome: FC = () => {
     <ThreadPrimitive.Empty>
       <div className="flex w-full max-w-[var(--thread-max-width)] flex-grow flex-col">
         <div className="flex w-full flex-grow flex-col items-center justify-center">
-          <p className="mt-4 font-medium">How can I help you today?</p>
+          <Avatar className="w-48 h-48 rounded-full">
+            <AvatarImage className="rounded-full" src="/images/mortgage_copilot_avatar.png" alt="AI Mortgage Coach" />
+            <AvatarFallback>Mortgage Copilot</AvatarFallback>
+          </Avatar>
+          <p className="text-muted-foreground text-center mt-2 max-w-md">
+            This is an open source mortgage copilot illustrating how anyone in the mortgage industry can create an interactive bot to dynamically engage with mortgage rate quoting.
+            
+          </p>
+          <p className="text-muted-foreground text-center mt-2 max-w-md">
+            Made with ❤️ by ClosingWTF and assistant-ui
+          </p>
+          <p className="text-muted-foreground text-center mt-2 max-w-md">
+            Using Vercel AISDK, Anthropic Claude
+          </p>
         </div>
         <ThreadWelcomeSuggestions />
       </div>
@@ -86,12 +103,12 @@ const ThreadWelcomeSuggestions: FC = () => {
     <div className="mt-3 flex w-full items-stretch justify-center gap-4">
       <ThreadPrimitive.Suggestion
         className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
-        prompt="What is the weather in Tokyo?"
+        prompt="What is the current market average for a 30 year fixed mortgage in hawaii?"
         method="replace"
         autoSend
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
-          What is the weather in Tokyo?
+          What is the current market average for a 30 year fixed mortgage in hawaii?
         </span>
       </ThreadPrimitive.Suggestion>
       <ThreadPrimitive.Suggestion
@@ -111,13 +128,31 @@ const ThreadWelcomeSuggestions: FC = () => {
 const Composer: FC = () => {
   return (
     <ComposerPrimitive.Root className="focus-within:border-ring/20 flex w-full flex-wrap items-end rounded-lg border bg-inherit px-2.5 shadow-sm transition-colors ease-in">
-      <ComposerPrimitive.Input
-        rows={1}
-        autoFocus
-        placeholder="Write a message..."
-        className="placeholder:text-muted-foreground max-h-40 flex-grow resize-none border-none bg-transparent px-2 py-4 text-sm outline-none focus:ring-0 disabled:cursor-not-allowed"
-      />
-      <ComposerAction />
+       <ComposerAttachments />
+       <AttachmentInputPrimitive.Root className="w-full">
+        <AttachmentInputPrimitive.DropZone className="w-full">
+          <AttachmentInputPrimitive.PasteZone className="flex items-center w-full">
+            <AttachmentInputPrimitive.Trigger>
+            <TooltipIconButton
+              className="size-8 p-2 transition-opacity ease-in"
+              tooltip="Add Attachment"
+              variant="ghost"
+            >
+              <PaperclipIcon />
+            </TooltipIconButton>
+          </AttachmentInputPrimitive.Trigger>
+          <ComposerPrimitive.Input
+            rows={1}
+            autoFocus
+            placeholder="Write a message..."
+            className="placeholder:text-muted-foreground max-h-40 flex-grow resize-none border-none bg-transparent px-2 py-4 text-sm outline-none focus:ring-0 disabled:cursor-not-allowed"
+          />
+          <ComposerAction />
+
+          </AttachmentInputPrimitive.PasteZone>
+        </AttachmentInputPrimitive.DropZone>
+       </AttachmentInputPrimitive.Root>
+     
     </ComposerPrimitive.Root>
   );
 };
@@ -155,6 +190,7 @@ const UserMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="grid auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] gap-y-2 [&:where(>*)]:col-start-2 w-full max-w-[var(--thread-max-width)] py-4">
       <UserActionBar />
+      <UserMessageAttachments />
 
       <div className="bg-muted text-foreground max-w-[calc(var(--thread-max-width)*0.8)] break-words rounded-3xl px-5 py-2.5 col-start-2 row-start-2">
         <MessagePrimitive.Content />
@@ -183,18 +219,25 @@ const UserActionBar: FC = () => {
 
 const EditComposer: FC = () => {
   return (
-    <ComposerPrimitive.Root className="bg-muted my-4 flex w-full max-w-[var(--thread-max-width)] flex-col gap-2 rounded-xl">
-      <ComposerPrimitive.Input className="text-foreground flex h-8 w-full resize-none bg-transparent p-4 pb-0 outline-none" />
+    <MessagePrimitive.Root>
+      <ComposerPrimitive.Root>
+        <ComposerPrimitive.Input />
+        <ComposerPrimitive.Cancel />
+        <ComposerPrimitive.Send />
+      </ComposerPrimitive.Root>
+    </MessagePrimitive.Root>
+    // <ComposerPrimitive.Root className="bg-muted my-4 flex w-full max-w-[var(--thread-max-width)] flex-col gap-2 rounded-xl">
+    //   <ComposerPrimitive.Input className="text-foreground flex h-8 w-full resize-none bg-transparent p-4 pb-0 outline-none" />
 
-      <div className="mx-3 mb-3 flex items-center justify-center gap-2 self-end">
-        <ComposerPrimitive.Cancel asChild>
-          <Button variant="ghost">Cancel</Button>
-        </ComposerPrimitive.Cancel>
-        <ComposerPrimitive.Send asChild>
-          <Button>Send</Button>
-        </ComposerPrimitive.Send>
-      </div>
-    </ComposerPrimitive.Root>
+    //   <div className="mx-3 mb-3 flex items-center justify-center gap-2 self-end">
+    //     <ComposerPrimitive.Cancel asChild>
+    //       <Button variant="ghost">Cancel</Button>
+    //     </ComposerPrimitive.Cancel>
+    //     <ComposerPrimitive.Send asChild>
+    //       <Button>Send</Button>
+    //     </ComposerPrimitive.Send>
+    //   </div>
+    // </ComposerPrimitive.Root>
   );
 };
 
