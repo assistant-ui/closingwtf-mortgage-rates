@@ -11,7 +11,7 @@ import { AssistantRuntimeProvider, CompositeAttachmentAdapter, SimpleImageAttach
 import { PDFAttachmentAdapter } from "@/components/assistant-ui/adapters/pdf-attachment-adapter";
 import { ZipSelector } from "@/components/forms/zip-selector";
 import { SetZipCodeToolUI } from "@/components/assistant-ui/tools/zipcode";
-import { SetRatesToolUI } from "@/components/assistant-ui/tools/rates";
+import { SetRetrieveRatesToolUI } from "@/components/assistant-ui/tools/rates";
 import { ZipProvider } from "@/lib/context/zip-context";
 
 export default function Home() {
@@ -58,7 +58,7 @@ export default function Home() {
         
         <Assistant />
         <SetZipCodeToolUI />
-        <SetRatesToolUI />
+        <SetRetrieveRatesToolUI />
       </SidebarInset>
     </SidebarProvider>
     </ZipProvider>

@@ -27,8 +27,10 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { useForm } from "react-hook-form";
-import { makeAssistantVisible, useComposerRuntime, useThreadRuntime } from "@assistant-ui/react";
+import { makeAssistantVisible, ToolCallContentPart, useComposerRuntime, useThreadListItemRuntime, useThreadRuntime } from "@assistant-ui/react";
 import { DEFAULT_ZIP_DATA, useZip } from "@/lib/context/zip-context";
+import { mortgageDetailsSchema } from "@/types/schemas";
+import { GetPurchaseRatesArgs, PurchaseRatesResult } from "@/types/tools";
 // Assuming CurrencyInput might be needed for loan amount, like in the example
 // If not available or needed, we'll use standard Input
 // import { CurrencyInput } from "@/components/ui/input";
@@ -59,32 +61,6 @@ function FormLabelWithTooltip({ label, tooltip }: FormLabelWithTooltipProps) {
   );
 }
 
-// Define the schema for the form
-export const mortgageDetailsSchema = z.object({
-  zipCode: z.coerce
-    .string()
-    .min(5, "Enter a valid 5-digit zip code")
-    .max(5, "Enter a valid 5-digit zip code"),
-  purchasePrice: z.coerce
-    .number()
-    .positive("Purchase price must be a positive number"),
-  maxOutOfPocket: z.coerce
-    .number()
-    .positive("Max out of pocket must be a positive number"),
-  loanTermYears: z.enum(["10", "15", "20", "30"]),
-  qualifyingFicoScore: z.coerce
-    .number()
-    .int()
-    .min(300, "FICO score must be between 300 and 850")
-    .max(850, "FICO score must be between 300 and 850"),
-  loanPurpose: z.enum(["purchase", "refinance"]),
-  propertyUsageType: z.enum(["PRIMARY_RESIDENCE", "SECOND_HOME", "INVESTMENT"]),
-  neighborhoodHousingType: z.enum(["SINGLE_FAMILY", "MULTI_FAMILY", "CONDO", "MANUFACTURED"]),
-  isFirstTimeHomeBuyer: z.boolean(),
-});
-
-// type MortgageDetailsFormValues = z.infer<typeof mortgageDetailsSchema>;
-
 const AssistantCurrencyInput = makeAssistantVisible(CurrencyInput, {
   editable: true,
 });
@@ -99,7 +75,7 @@ export function MortgageDetailsForm() {
   // | "initialize"
   // | "model-context-update";
   const threadRuntime = useThreadRuntime();
-  // const threadListItemRuntime = useThreadListItemRuntime();
+  const threadListItemRuntime = useThreadListItemRuntime();
   // const threadListRuntime = useAssistantRuntime();
   // const assistantRuntime = useAssistantRuntime();
   const composerRuntime = useComposerRuntime();
@@ -108,7 +84,13 @@ export function MortgageDetailsForm() {
     return threadRuntime.unstable_on("run-end", () => {
       const currentState = threadRuntime.getState();
       console.log("currentState", currentState);
-      // const lastMessage = currentState.messages[currentState.messages.length - 1];
+      const lastMessage = currentState.messages[currentState.messages.length - 1];
+      const lastContent = lastMessage?.content?.findLast(content => 'toolName' in content) as ToolCallContentPart<GetPurchaseRatesArgs, { purchaseRatesResult: PurchaseRatesResult }>;
+      if(lastContent?.toolName === "retrieveMortgageRates") {
+        const args = lastContent.args;
+        const newThreadTitle = `${args.loanPurpose === "purchase" ? "Purchase" : "Refinance"} - $${(args.purchasePrice / 1000).toFixed(0)}k - ${args.loanTermYears}yr - FICO ${args.qualifyingFicoScore} - Zip ${args.zipCode}`;
+        threadListItemRuntime?.rename(newThreadTitle);
+      }
       // // note text may not be present here
       // if(!lastMessage?.content?.[0]?.text) {
       //   return;
