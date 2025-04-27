@@ -13,7 +13,6 @@ Then, install dependencies
 bun install
 ```
 
-
 Then, run the development server:
 
 ```bash

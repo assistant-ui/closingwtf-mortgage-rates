@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import { NumericFormat } from "react-number-format";
+import { type ComponentPropsWithoutRef } from "react";
 
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => {
@@ -21,7 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
 );
 Input.displayName = "Input";
 
-interface CurrencyInputProps {
+interface CurrencyInputProps extends Omit<ComponentPropsWithoutRef<typeof NumericFormat>, "onChange"> {
   value: number | undefined;
   placeholder?: string;
   onChange: (value: number) => void;
@@ -31,30 +32,30 @@ interface CurrencyInputProps {
   onBlur?: () => void;
 }
 
-const CurrencyInput = ({
-  value,
-  placeholder,
-  onChange,
-  onBlur,
-  className = "",
-}: CurrencyInputProps) => {
-  return (
-    <div className="relative">
-      <NumericFormat
-        value={value}
-        thousandSeparator=","
-        prefix="$"
-        decimalScale={2}
-        placeholder={placeholder}
-        onValueChange={(values) => {
-          onChange(values.floatValue || 0);
-        }}
-        onBlur={onBlur}
-        className={`w-full p-2 pr-10 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${className}`}
-      />
-    </div>
-  );
-};
+const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
+  ({ value, placeholder, onChange, onBlur, className = "", ...props }, ref) => {
+    return (
+      <div className="relative">
+        <NumericFormat
+          value={value}
+          thousandSeparator=","
+          prefix="$"
+          decimalScale={2}
+          placeholder={placeholder}
+          onValueChange={(values) => {
+            onChange(values.floatValue || 0);
+          }}
+          onBlur={onBlur}
+          className={`w-full p-2 pr-10 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${className}`}
+          getInputRef={ref}
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+
+CurrencyInput.displayName = "CurrencyInput";
 
 interface PercentageInputProps {
   name: string;

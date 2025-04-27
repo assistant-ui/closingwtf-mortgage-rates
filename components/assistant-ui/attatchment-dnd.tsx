@@ -35,7 +35,9 @@ const AttachmentInput = forwardRef<HTMLDivElement, AttachmentInputProps>(
         for (const file of files) {
           composer.addAttachment(file);
         }
+        console.log("files", files);
         e.target.value = "";
+        composer.send();
       },
       [composer],
     );
@@ -125,6 +127,7 @@ const AttachmentInputDropZone = forwardRef<
     "AttachmentInputDropZone",
   );
   const [isDragging, setIsDragging] = useState(false);
+  const composerRuntime = useComposerRuntime();
 
   const handleDrag = useCallback(
     (e: React.DragEvent) => {
@@ -137,16 +140,18 @@ const AttachmentInputDropZone = forwardRef<
   );
 
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    async (e: React.DragEvent) => {
       if (disabled) return;
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
       for (const file of e.dataTransfer.files) {
-        addFile(file);
+        await addFile(file);
       }
+      
+      composerRuntime.send();
     },
-    [disabled, addFile],
+    [disabled, addFile, composerRuntime],
   );
 
   const dragProps = {

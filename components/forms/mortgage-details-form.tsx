@@ -1,9 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Info, ChevronDown, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Info, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CurrencyInput, Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import {
@@ -28,7 +27,8 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { useForm } from "react-hook-form";
-import { RateTableResult } from "@/types/tools";
+import { makeAssistantVisible, useComposerRuntime, useThreadRuntime } from "@assistant-ui/react";
+import { DEFAULT_ZIP_DATA, useZip } from "@/lib/context/zip-context";
 // Assuming CurrencyInput might be needed for loan amount, like in the example
 // If not available or needed, we'll use standard Input
 // import { CurrencyInput } from "@/components/ui/input";
@@ -60,11 +60,11 @@ function FormLabelWithTooltip({ label, tooltip }: FormLabelWithTooltipProps) {
 }
 
 // Define the schema for the form
-const mortgageDetailsSchema = z.object({
+export const mortgageDetailsSchema = z.object({
   zipCode: z.coerce
-    .number()
-    .min(10000, "Enter a valid 5-digit zip code")
-    .max(99999, "Enter a valid 5-digit zip code"),
+    .string()
+    .min(5, "Enter a valid 5-digit zip code")
+    .max(5, "Enter a valid 5-digit zip code"),
   purchasePrice: z.coerce
     .number()
     .positive("Purchase price must be a positive number"),
@@ -72,10 +72,6 @@ const mortgageDetailsSchema = z.object({
     .number()
     .positive("Max out of pocket must be a positive number"),
   loanTermYears: z.enum(["10", "15", "20", "30"]),
-  ltv: z.coerce
-    .number()
-    .min(1, "LTV must be between 1 and 100")
-    .max(100, "LTV must be between 1 and 100"),
   qualifyingFicoScore: z.coerce
     .number()
     .int()
@@ -87,22 +83,51 @@ const mortgageDetailsSchema = z.object({
   isFirstTimeHomeBuyer: z.boolean(),
 });
 
-type MortgageDetailsFormValues = z.infer<typeof mortgageDetailsSchema>;
+// type MortgageDetailsFormValues = z.infer<typeof mortgageDetailsSchema>;
 
+const AssistantCurrencyInput = makeAssistantVisible(CurrencyInput, {
+  editable: true,
+});
 
 export function MortgageDetailsForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [rates, setRates] = useState<RateTableResult[] | null>(null);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const { zipData } = useZip();
 
   // const form = useAssistantForm<z.infer<typeof mortgageDetailsSchema>>({
+  // "run-start"
+  // | "run-end"
+  // | "initialize"
+  // | "model-context-update";
+  const threadRuntime = useThreadRuntime();
+  // const threadListItemRuntime = useThreadListItemRuntime();
+  // const threadListRuntime = useAssistantRuntime();
+  // const assistantRuntime = useAssistantRuntime();
+  const composerRuntime = useComposerRuntime();
+
+  useEffect(() => {
+    return threadRuntime.unstable_on("run-end", () => {
+      const currentState = threadRuntime.getState();
+      console.log("currentState", currentState);
+      // const lastMessage = currentState.messages[currentState.messages.length - 1];
+      // // note text may not be present here
+      // if(!lastMessage?.content?.[0]?.text) {
+      //   return;
+      // }
+
+      // threadListItemRuntime.rename(lastMessage.content[0].text.substring(0, 20));
+
+
+      // this does the same things as clicking new thread
+      // threadListRuntime.threads.switchToNewThread();
+    });
+  }, [threadRuntime]);
+  
   const form = useForm<z.infer<typeof mortgageDetailsSchema>>({
     resolver: zodResolver(mortgageDetailsSchema),
     defaultValues: {
       purchasePrice: 800000,
       maxOutOfPocket: 160000,
       loanTermYears: "30",
-      ltv: 80,
       qualifyingFicoScore: 740,
       loanPurpose: "purchase",
       propertyUsageType: "PRIMARY_RESIDENCE",
@@ -111,59 +136,27 @@ export function MortgageDetailsForm() {
     },
   });
 
-  async function onSubmit(values: MortgageDetailsFormValues) {
-    setIsLoading(true);
-    setRates(null);
-    console.log("Form submitted:", values);
+  // Initialize composerRuntime config on first render
+  useEffect(() => {
+    composerRuntime.setRunConfig({
+      custom: { formData: form.getValues(), zipCode: zipData || DEFAULT_ZIP_DATA}
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const purchasePrice = values.purchasePrice / (values.ltv / 100);
+  // Update composerRuntime config whenever form changes
+  useEffect(() => {
+    composerRuntime.setRunConfig({
+      custom: { formData: form.getValues(), zipCode: zipData || DEFAULT_ZIP_DATA}
+    });
+  }, [composerRuntime, zipData, form]);
 
-    const apiPayload = {
-      ...values,
-      loanTerm: values.loanTermYears,
-      purchasePrice: purchasePrice,
-      loanPurpose: "purchase",
-      isBorrowerSelfEmployed: false,
-      isFirstTimeHomeBuyer: false,
-      monthlyDebt: 2000,
-      monthlyIncome: 8000,
-      neighborhoodHousingType: "SINGLE_FAMILY",
-      propertyUsageType: "PRIMARY_RESIDENCE",
-      rateLockDays: 30,
-      loanType: "CONVENTIONAL",
-    };
-
-    try {
-      const response = await fetch('/api/get-rates', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiPayload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `API Error: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log("API Result:", result);
-      setRates(result.rates);
-      toast.success("Rates fetched successfully!");
-    } catch (error) {
-      console.error("API call failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to fetch rates."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form 
+      // onSubmit={form.handleSubmit(onSubmit)}
+       className="space-y-8">
         {/* Personal Section */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
@@ -217,7 +210,7 @@ export function MortgageDetailsForm() {
                 <FormItem>
                   <FormLabel>Max Out of Pocket</FormLabel>
                   <FormControl>
-                    <CurrencyInput
+                    <AssistantCurrencyInput
                       {...field}
                       onChange={(e) => field.onChange(e)}
                       value={field.value ?? 0}
@@ -273,7 +266,7 @@ export function MortgageDetailsForm() {
                 <FormItem>
                   <FormLabel>Purchase Price</FormLabel>
                   <FormControl>
-                    <CurrencyInput
+                    <AssistantCurrencyInput
                       {...field}
                       onChange={(e) => field.onChange(e)}
                       value={field.value ?? 0}
@@ -316,26 +309,6 @@ export function MortgageDetailsForm() {
                       <SelectItem value="10">10 Years Fixed</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="ltv"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loan to Value (%)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="80"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -484,7 +457,7 @@ export function MortgageDetailsForm() {
           </CollapsibleContent>
         </Collapsible>
 
-        <Button type="submit" disabled={isLoading} className="w-full">
+        {/* <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />
@@ -493,16 +466,17 @@ export function MortgageDetailsForm() {
           ) : (
             "Show ClosingWTF Marketing Rates"
           )}
+        </Button> */}
+        <Button onClick={() => {
+          composerRuntime.setText(
+            JSON.stringify(form.getValues(), null, 2) + 
+            `\n ZIP CODE: ${JSON.stringify(zipData)}`
+          );
+          composerRuntime.send();
+        }}>
+          Send Form to Assistant
         </Button>
       </form>
-      {rates && (
-        <div className="mt-4 p-4 border rounded bg-secondary">
-          <h3 className="text-lg font-semibold mb-2">Fetched Rates:</h3>
-          <pre className="text-sm overflow-auto max-h-60">
-            {JSON.stringify(rates, null, 2)}
-          </pre>
-        </div>
-      )}
     </Form>
   );
 }
