@@ -91,18 +91,12 @@ export function MortgageDetailsForm() {
         const newThreadTitle = `${args.loanPurpose === "purchase" ? "Purchase" : "Refinance"} - $${(args.purchasePrice / 1000).toFixed(0)}k - ${args.loanTermYears}yr - FICO ${args.qualifyingFicoScore} - Zip ${args.zipCode}`;
         threadListItemRuntime?.rename(newThreadTitle);
       }
-      // // note text may not be present here
-      // if(!lastMessage?.content?.[0]?.text) {
-      //   return;
-      // }
 
-      // threadListItemRuntime.rename(lastMessage.content[0].text.substring(0, 20));
-
-
+      
       // this does the same things as clicking new thread
       // threadListRuntime.threads.switchToNewThread();
     });
-  }, [threadRuntime]);
+  }, [threadRuntime, threadListItemRuntime]);
   
   const form = useForm<z.infer<typeof mortgageDetailsSchema>>({
     resolver: zodResolver(mortgageDetailsSchema),
