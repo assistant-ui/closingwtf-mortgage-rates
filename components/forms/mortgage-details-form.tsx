@@ -443,12 +443,13 @@ export function MortgageDetailsForm() {
             "Show ClosingWTF Marketing Rates"
           )}
         </Button> */}
-        <Button onClick={() => {
+        <Button onClick={(e) => {
           composerRuntime.setText(
             JSON.stringify(form.getValues(), null, 2) + 
             `\n ZIP CODE: ${JSON.stringify(zipData)}`
           );
           composerRuntime.send();
+          e.preventDefault();
         }}>
           Send Form to Assistant
         </Button>
