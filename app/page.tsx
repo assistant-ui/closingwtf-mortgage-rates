@@ -15,10 +15,13 @@ import { SetRetrieveRatesToolUI } from "@/components/assistant-ui/tools/rates";
 import { ZipProvider } from "@/lib/context/zip-context";
 
 export default function Home() {
-  const assistantCloud = new AssistantCloud({
-    baseUrl: process.env.NEXT_PUBLIC_ASSISTANT_BASE_URL!,
-    anonymous: true,
-  });
+  const assistantCloud = process.env.NEXT_PUBLIC_ASSISTANT_BASE_URL 
+    ? new AssistantCloud({
+        baseUrl: process.env.NEXT_PUBLIC_ASSISTANT_BASE_URL,
+        anonymous: true,
+      })
+    : undefined;
+  
   const runtime = useChatRuntime({
     api: "/api/chat",
     adapters: {
@@ -28,7 +31,7 @@ export default function Home() {
         new PDFAttachmentAdapter(),
       ]),
     },
-    cloud: assistantCloud,
+    ...(assistantCloud && { cloud: assistantCloud }),
   });
   return (
     <AssistantRuntimeProvider 
