@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
                     <span className="font-semibold">Sponsored by</span>
-                    <span className="">Assistant UI</span>
+                    <span className="">assistant-ui</span>
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
          
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="https://github.com/closingwtf/mortgage-copilot" target="_blank">
+              <Link href="https://github.com/assistant-ui/closingwtf-mortgage-rates" target="_blank">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Github className="size-4" />
                 </div>

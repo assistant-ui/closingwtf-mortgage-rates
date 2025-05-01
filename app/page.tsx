@@ -7,7 +7,7 @@ import { BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Assistant } from "./assistant";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
-import { AssistantRuntimeProvider, CompositeAttachmentAdapter, SimpleImageAttachmentAdapter, SimpleTextAttachmentAdapter } from "@assistant-ui/react";
+import { AssistantCloud, AssistantRuntimeProvider, CompositeAttachmentAdapter, SimpleImageAttachmentAdapter, SimpleTextAttachmentAdapter } from "@assistant-ui/react";
 import { PDFAttachmentAdapter } from "@/components/assistant-ui/adapters/pdf-attachment-adapter";
 import { ZipSelector } from "@/components/forms/zip-selector";
 import { SetZipCodeToolUI } from "@/components/assistant-ui/tools/zipcode";
@@ -15,6 +15,10 @@ import { SetRetrieveRatesToolUI } from "@/components/assistant-ui/tools/rates";
 import { ZipProvider } from "@/lib/context/zip-context";
 
 export default function Home() {
+  const assistantCloud = new AssistantCloud({
+    baseUrl: process.env.NEXT_PUBLIC_ASSISTANT_BASE_URL!,
+    anonymous: true,
+  });
   const runtime = useChatRuntime({
     api: "/api/chat",
     adapters: {
@@ -24,10 +28,8 @@ export default function Home() {
         new PDFAttachmentAdapter(),
       ]),
     },
+    cloud: assistantCloud,
   });
-
-
-  
   return (
     <AssistantRuntimeProvider 
       runtime={runtime}
