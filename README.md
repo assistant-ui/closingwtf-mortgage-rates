@@ -27,6 +27,8 @@ Medium blog post explaining project: [LLMs + Mortgage Rates: An intuitive financ
 
 ## Web, Chat & Data Architecture
 
+
+
 **Web Framework:** NextJS
 **Typescript/React library for AI Chat**: [assistant-ui](https://assistant-ui.com)
 
