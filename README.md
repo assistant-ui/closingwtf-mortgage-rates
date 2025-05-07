@@ -27,9 +27,11 @@ Medium blog post explaining project: [LLMs + Mortgage Rates: An intuitive financ
 
 ## Web, Chat & Data Architecture
 
+![1_nP-CB8rD2NVh2NM2qJP8Ew](https://github.com/user-attachments/assets/540964ff-6d9f-461b-8e1e-2a66d1e51596)
 
 
 **Web Framework:** NextJS
+
 **Typescript/React library for AI Chat**: [assistant-ui](https://assistant-ui.com)
 
 **Mortgage Rates API**: [ClosingWTF](https://closingwtf.com)
