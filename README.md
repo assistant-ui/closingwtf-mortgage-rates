@@ -25,6 +25,14 @@ Medium blog post explaining project: [LLMs + Mortgage Rates: An intuitive financ
   <img width="33%" alt="Screenshot 2025-05-01 at 4 14 56 PM" src="https://github.com/user-attachments/assets/2b00363d-b7bf-4fe9-a26a-a4d29a98ca0e" />
 </div>
 
+## Web, Chat & Data Architecture
+
+**Web Framework:** NextJS
+**Typescript/React library for AI Chat**: [assistant-ui](https://assistant-ui.com)
+**Mortgage Rates API**: [ClosingWTF](https://closingwtf.com]
+**LLM API Middleware**: [vercel ai-sdk](https://sdk.vercel.ai)
+**Chat Thread Storage**: assistant-ui cloud
+**LLM Provider** — Anthropic
 
 ## Getting Started
 
