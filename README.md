@@ -1,6 +1,6 @@
 # ClosingWTF Mortgage Rate Copilot
 
-Sponsored by [assistant-ui](https://assistant-ui.com)
+Medium blog post explaining project: [LLMs + Mortgage Rates: An intuitive financial chatbot built with ClosingWTF, assistant-ui, and NextJS](https://aaronlandy.medium.com/llms-mortgage-rates-building-an-intuitive-financial-chatbot-in-nextjs-88e87678507a)
 
 <div align="left">
   <a href="https://closingwtf-mortgage-rates.vercel.app" target="_blank">
