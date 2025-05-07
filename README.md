@@ -1,5 +1,3 @@
-
-
 # ClosingWTF Mortgage Rate Copilot
 
 Sponsored by [assistant-ui](https://assistant-ui.com)
@@ -26,7 +24,6 @@ Sponsored by [assistant-ui](https://assistant-ui.com)
   <img width="33%" alt="Screenshot 2025-04-27 at 12 02 38 PM" src="https://github.com/user-attachments/assets/7d256625-6afc-4f19-91de-94c4a5d84d07" />
   <img width="33%" alt="Screenshot 2025-05-01 at 4 14 56 PM" src="https://github.com/user-attachments/assets/2b00363d-b7bf-4fe9-a26a-a4d29a98ca0e" />
 </div>
-
 
 
 ## Getting Started
