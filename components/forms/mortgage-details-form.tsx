@@ -26,11 +26,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import { useForm } from "react-hook-form";
 import { makeAssistantVisible, ToolCallContentPart, useComposerRuntime, useThreadListItemRuntime, useThreadRuntime } from "@assistant-ui/react";
 import { DEFAULT_ZIP_DATA, useZip } from "@/lib/context/zip-context";
 import { mortgageDetailsSchema } from "@/types/schemas";
 import { GetPurchaseRatesArgs, PurchaseRatesResult } from "@/types/tools";
+import { useForm } from "react-hook-form";
+// import { useAssistantForm } from "@assistant-ui/react-hook-form";
 // Assuming CurrencyInput might be needed for loan amount, like in the example
 // If not available or needed, we'll use standard Input
 // import { CurrencyInput } from "@/components/ui/input";
@@ -69,7 +70,6 @@ export function MortgageDetailsForm() {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const { zipData } = useZip();
 
-  // const form = useAssistantForm<z.infer<typeof mortgageDetailsSchema>>({
   // "run-start"
   // | "run-end"
   // | "initialize"
@@ -97,7 +97,7 @@ export function MortgageDetailsForm() {
       // threadListRuntime.threads.switchToNewThread();
     });
   }, [threadRuntime, threadListItemRuntime]);
-  
+
   const form = useForm<z.infer<typeof mortgageDetailsSchema>>({
     resolver: zodResolver(mortgageDetailsSchema),
     defaultValues: {
