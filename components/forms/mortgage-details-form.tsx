@@ -26,7 +26,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import { makeAssistantVisible, ToolCallContentPart, useComposerRuntime, useThreadListItemRuntime, useThreadRuntime } from "@assistant-ui/react";
+import { makeAssistantVisible, ToolCallMessagePart, useComposerRuntime, useThreadListItemRuntime, useThreadRuntime } from "@assistant-ui/react";
 import { DEFAULT_ZIP_DATA, useZip } from "@/lib/context/zip-context";
 import { mortgageDetailsSchema } from "@/types/schemas";
 import { GetPurchaseRatesArgs, PurchaseRatesResult } from "@/types/tools";
@@ -85,7 +85,7 @@ export function MortgageDetailsForm() {
       const currentState = threadRuntime.getState();
       console.log("currentState", currentState);
       const lastMessage = currentState.messages[currentState.messages.length - 1];
-      const lastContent = lastMessage?.content?.findLast(content => 'toolName' in content) as ToolCallContentPart<GetPurchaseRatesArgs, { purchaseRatesResult: PurchaseRatesResult }>;
+      const lastContent = lastMessage?.content?.findLast(content => 'toolName' in content) as ToolCallMessagePart<GetPurchaseRatesArgs, { purchaseRatesResult: PurchaseRatesResult }>;
       if(lastContent?.toolName === "retrieveMortgageRates") {
         const args = lastContent.args;
         const newThreadTitle = `${args.loanPurpose === "purchase" ? "Purchase" : "Refinance"} - $${(args.purchasePrice / 1000).toFixed(0)}k - ${args.loanTermYears}yr - FICO ${args.qualifyingFicoScore} - Zip ${args.zipCode}`;
