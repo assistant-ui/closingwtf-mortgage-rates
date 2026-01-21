@@ -3,19 +3,15 @@ import { z } from "zod";
 
 // Define the schema for the form
 export const mortgageDetailsSchema = z.object({
-  zipCode: z.coerce
-    .string()
+  zipCode: z.string()
     .min(5, "Enter a valid 5-digit zip code")
     .max(5, "Enter a valid 5-digit zip code"),
-  purchasePrice: z.coerce
-    .number()
+  purchasePrice: z.number()
     .positive("Purchase price must be a positive number"),
-  maxOutOfPocket: z.coerce
-    .number()
+  maxOutOfPocket: z.number()
     .positive("Max out of pocket must be a positive number"),
   loanTermYears: z.enum(["10", "15", "20", "30"]),
-  qualifyingFicoScore: z.coerce
-    .number()
+  qualifyingFicoScore: z.number()
     .int()
     .min(300, "FICO score must be between 300 and 850")
     .max(850, "FICO score must be between 300 and 850"),
@@ -27,7 +23,7 @@ export const mortgageDetailsSchema = z.object({
 
 export const rateAnalyzerSchema = z.object({
     loanPurpose: z.enum(["purchase", "refinance"]),
-    zipCode: z.coerce.string().length(5, "ZIP code must be 5 digits"),
+    zipCode: z.string().length(5, "ZIP code must be 5 digits"),
     purchasePrice: z.number().min(0, "Purchase price must be positive"),
     loanAmount: z.number().min(0, "Loan amount must be positive"),
     loanTermYears: z.number().min(1, "Loan term must be at least 1 year"),
