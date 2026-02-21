@@ -1,7 +1,7 @@
 "use client"
 
 import { analyzeMortgageRate, fetchPurchaseRates } from "@/lib/api/rates";
-import { ToolCallContentPartProps, useAssistantTool } from "@assistant-ui/react";
+import { ToolCallMessagePartProps, useAssistantTool } from "@assistant-ui/react";
 import { Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AnalyzeRateArgs, AnalyzeRateResult, GetPurchaseRatesArgs, PurchaseRatesResult } from "@/types/tools";
@@ -62,7 +62,7 @@ const ToolArgumentsDisplay: React.FC<ToolArgumentsDisplayProps> = ({ args }) => 
 };
 
 interface ToolStatusDisplayProps {
-  status: ToolCallContentPartProps<unknown, unknown>['status'];
+  status: ToolCallMessagePartProps<unknown, unknown>['status'];
   loadingText?: string;
   errorText?: string;
 }
@@ -86,7 +86,7 @@ const ToolStatusDisplay: React.FC<ToolStatusDisplayProps> = ({
 };
 
 // Specific Tool Display Components
-const SetRetrieveRatesDisplay = ({ args, status, result }: ToolCallContentPartProps<GetPurchaseRatesArgs, { purchaseRatesResult: PurchaseRatesResult }>) => {
+const SetRetrieveRatesDisplay = ({ args, status, result }: ToolCallMessagePartProps<GetPurchaseRatesArgs, { purchaseRatesResult: PurchaseRatesResult }>) => {
     const rates = result?.purchaseRatesResult?.results;
 
     return (
@@ -177,7 +177,7 @@ export const SetRetrieveRatesToolUI = () => {
   return null;
 }
 
-const AnalyzeRateDisplay = ({ args, status, result }: ToolCallContentPartProps<AnalyzeRateArgs, { analyzeRateResult: AnalyzeRateResult }>) => {
+const AnalyzeRateDisplay = ({ args, status, result }: ToolCallMessagePartProps<AnalyzeRateArgs, { analyzeRateResult: AnalyzeRateResult }>) => {
   const analysis = result?.analyzeRateResult;
 
   return (

@@ -23,7 +23,6 @@ export default function Home() {
     : undefined;
   
   const runtime = useChatRuntime({
-    api: "/api/chat",
     adapters: {
       attachments: new CompositeAttachmentAdapter([
         new SimpleImageAttachmentAdapter(),
